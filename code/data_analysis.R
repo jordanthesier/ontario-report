@@ -37,11 +37,11 @@ sample_data %>%
 #Select() - subset by entire columns
 sample_data %>%
   #pick specific columns 
-  #select(sample_id, depth)
+  select(sample_id, depth)
   #pick columns over a range
-  #select(sample_id:temperature)
+  select(sample_id:temperature)
   #entire sample data remove a particular column
-  #select(-diss_org_carbon)
+  select(-diss_org_carbon)
   #remove multiple columns
   select(-c(diss_org_carbon, chlorophyll))
 
@@ -57,7 +57,7 @@ taxon_clean <-
 #What are the wide format dimensions? 71 rows by 7 columns
 dim(taxon_clean)
 
-#Pivot_lobger() - Shape data from wide into long format
+#Pivot_longer() - Shape data from wide into long format
 taxon_long <-
   taxon_clean %>%
     #from Prot to Cyan, new column name Phylum for titles, new column name Abundance for values
@@ -126,3 +126,30 @@ sample_and_taxon %>%
   geom_point() +
   #add a stat model
   geom_smooth()
+
+#Homework Question 4 - long format data using Proteobacteria to Cyanobacteria 
+taxon_clean_goodSept_long <-
+  taxon_clean_goodSept %>%
+    #from Prot to Cyan, new column name Phylum for titles, new column name Abundance for values
+    pivot_longer(cols = Proteobacteria:Cyanobacteria, names_to = "Phylum", values_to = "Abundance")
+
+#Checking
+dim(taxon_clean_goodSept) #71 x 7
+dim(taxon_clean_goodSept_long) #426 x 3
+
+#Homework Question 5 - join taxon_clean_goodSept_long to taxon_clean_goodSept, idk why
+sample_taxon_long <-
+  sample_data %>%
+    inner_join(., taxon_clean_goodSept_long, by = "sample_id")
+
+#Homework Question 6
+sample_taxon_long %>%
+  filter(Phylum %in% c("Bacteroidota", "Chloroflexi", "Cyanobacteria")) %>%
+    ggplot(aes(x = env_group, y = Abundance, color = env_group, fill = env_group)) +
+    labs(x = "Depth and Season", y = "Phylum Abundance", title = "Phylum abundance changes by depth and season") +
+    geom_jitter() +
+    geom_boxplot(alpha = 0.3, outlier.shape = NA) +
+    facet_wrap(~Phylum) +
+    theme(legend.position = "none", axis.text.x = element_text(angle = 45, hjust = 1))
+
+ggsave("phylum_abundance_vs_env_group.png", width = 6, height = 4)
