@@ -1,7 +1,11 @@
 #Data analysis
 
+#intsall ggpubr
+install.packages("ggpubr")
+
 #Load packages 
 library(tidyverse)
+library(ggpubr)
 
 #Grab data for analysis
 sample_data <- read_csv("data/sample_data.csv")
@@ -153,3 +157,14 @@ sample_taxon_long %>%
     theme(legend.position = "none", axis.text.x = element_text(angle = 45, hjust = 1))
 
 ggsave("phylum_abundance_vs_env_group.png", width = 6, height = 4)
+
+#Homework Question 10
+sample_taxon_long %>%
+  filter(Phylum %in% c("Bacteroidota", "Chloroflexi", "Cyanobacteria")) %>%
+  ggplot(aes(x = env_group, y = Abundance, color = env_group, fill = env_group)) +
+  labs(x = "Depth and Season", y = "Phylum Abundance", title = "Phylum abundance changes by depth and season") +
+  geom_jitter() +
+  geom_boxplot(alpha = 0.3, outlier.shape = NA) +
+  facet_wrap(~Phylum) +
+  stat_compare_means(method = "kruskal.test", label = "p.signif") +  # Add Kruskal-Wallis test
+  theme(legend.position = "none", axis.text.x = element_text(angle = 45, hjust = 1))
