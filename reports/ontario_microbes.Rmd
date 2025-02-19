@@ -2,12 +2,14 @@
 title: "A Report On Lake Ontario's Microbes"
 author: "Jordan"
 date: "2025-02-19"
-output: html_document
+output: pdf_document
 editor_options: 
   chunk_output_type: console
 ---
 
 ```{r setup, include=FALSE}
+#install.packages("tinytex")
+#tinytex::install_tinytex()
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
